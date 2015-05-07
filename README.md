@@ -41,7 +41,7 @@ Helpful Resources
 ## Comment
 This project was check by lint.
 
-HTML Lint : http://www.htmllint.net/en/html-lint/htmllintl.html
-CSS Lint : http://csslint.net
-JS Lint : http://www.javascriptlint.com/online_lint.php
+#HTML Lint : http://www.htmllint.net/en/html-lint/htmllintl.html
+#CSS Lint : http://csslint.net
+#JS Lint : http://www.javascriptlint.com/online_lint.php
          (http://www.jslint.com - This site has many warnings about my code.)
