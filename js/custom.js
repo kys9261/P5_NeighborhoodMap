@@ -1,65 +1,50 @@
 //Intialize marker list.
 var markerInit = [{
-    title: "Home",
+    title: "House",
+    comment: "Here is my House.",
     lat: 37.5362017,
     lng: 126.8438297,
     visible: true
   }, {
     title: "GangNam-Station",
+    comment: "Do you know GangNam Style?",
     lat: 37.4976048,
     lng: 127.0273028,
     visible: true
   }, {
-    title: "GwangHwa-Moon",
+    title: "GwangHwa-Gate",
+    comment: "Here is traditional gate of palace.",
     lat: 37.5754455,
     lng: 126.9766291,
     visible: true
   }
 ];
            
-//add marker infowindow.
-var addMarkerWindow = '<div id="addwin" style="display: hidden"><center> <h2>Input Marker Title!</h2><br><input type="text" data-bind="value:title" placeholder="Intput title"></input>&nbsp;<button data-bind="click:addMarker">Submit</button></center></div>';
-
-//click marker infowindow.
-var clickMarkerWindow = '<div id="infowin" style="display: hidden"><center><h1>$title</h1></center></div>';
-
-//this var is change method between applyBindings() and cleanNode(). 
-//because when I use applyBinding() method twice, then show the error like this. ("Error You cannot apply bindings multiple times to the same element")
-//So first time is use applyBinding() and next time use cleanNode().
-var addMarkerCount = 0;
-
 //initialize google map.
 function initialize(){
+
+    var initLocation = new google.maps.LatLng(37.575282,126.976753);
+
     var mapOptions = {
         zoom: 11,
-        center: new google.maps.LatLng(37.5591237,126.9695029),
+        center: initLocation,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
     map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
 
-    addwindow = new google.maps.InfoWindow({
-        content: addMarkerWindow
-    });
-
-    //This listener purpose is using nockout function in infowindow.
-    google.maps.event.addListener(addwindow, "domready", function(){
-        if(addMarkerCount === 0){
-            ko.applyBindings(model, document.getElementById("addwin"));
-            addMarkerCount++;  
-        }else{
-            ko.cleanNode(model, document.getElementById("addwin"));
+    //google map panorama option
+    var panoramaOptions = {
+        position: initLocation,
+        pov: {
+            heading: 20,
+            pitch: 10
         }
-    });
-
-    //Add listener to map for show add marker window.
-    google.maps.event.addListener(map, "click", function(e){
-        addwindow.open(map);
-        addwindow.setPosition(e.latLng);
-        var position = String(e.latLng).split(",");
-        lats = position[0].replace("(","");
-        lngs = position[1].replace(")","");
-    });
+    };
+    
+    //google map panorama
+    var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+    map.setStreetView(panorama);
 }
 
 //Make marker function.
@@ -73,7 +58,8 @@ var makeMarker = function(data){
     this.marker = new google.maps.Marker({
         position: new google.maps.LatLng(this.lat(), this.lng()),
         map: map,
-        title: this.title()
+        title: this.title(),
+        comment: data.comment
     });
     
     //Visivility setting for search.
@@ -88,26 +74,21 @@ var makeMarker = function(data){
     var marker = this.marker;
     google.maps.event.addListener(marker, "click", function(e) {
         var infowindow = new google.maps.InfoWindow({
-            content: '<div id="infowin" style="display: hidden"><center><h1>'+marker.title+'</h1></center></div>'
+            content: document.getElementById('infomation').value = marker.title +' <br> '+ marker.comment
         });
         infowindow.open(marker.map, marker);
     });  
-    addwindow.close();
 };
 
 //Side list setting function.
 var PageGridModel = function(){
-    this.title = ko.observable("");
+    this.comment = ko.observable("");
     this.query = ko.observable("");
     this.markerList = ko.observableArray([]);
 
     for(var marker in markerInit){
         this.markerList.push(new makeMarker(markerInit[marker]));
     }
-
-    this.addMarker = function(){
-        this.markerList.push(new makeMarker({title: this.title(), lat:lats, lng:lngs, visible:true}));
-    };
 
     this.filteredMarkers = ko.dependentObservable(function() {
         var filter = this.query().toLowerCase();
