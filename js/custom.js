@@ -47,8 +47,10 @@ function initialize(){
     map.setStreetView(panorama);
 }
 
+//info Window array
 var infoWindows = [];
 
+//close all infowindow function
 var closeAllInfoWindow = function(){
     var size = infoWindows.length;
     if(size !== 0){
