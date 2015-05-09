@@ -47,6 +47,17 @@ function initialize(){
     map.setStreetView(panorama);
 }
 
+var infoWindows = [];
+
+var closeAllInfoWindow = function(){
+    var size = infoWindows.length;
+    if(size !== 0){
+        for(var i=0; i<size; i++){
+            infoWindows[i].close();
+        }
+    }
+}
+
 //Make marker function.
 var makeMarker = function(data){
     this.title=ko.observable(data.title);
@@ -73,9 +84,11 @@ var makeMarker = function(data){
     //Add listener to marker click event.
     var marker = this.marker;
     google.maps.event.addListener(marker, "click", function(e) {
-        var infowindow = new google.maps.InfoWindow({
+        closeAllInfoWindow();
+        infowindow = new google.maps.InfoWindow({
             content: document.getElementById('infomation').value = marker.title +' <br> '+ marker.comment
         });
+        infoWindows.push(infowindow);
         infowindow.open(marker.map, marker);
     });  
 };
